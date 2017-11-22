@@ -13,7 +13,6 @@ twitter_api = twitter.Twitter(auth=auth)
 csvfile = open('brexit_data.csv', 'w')
 csvwriter = csv.writer(csvfile)
 csvwriter.writerow([['created_at'],
-					['user'],
 					['screen_name'],
 					['text'],
 					['created_at'],
