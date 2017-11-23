@@ -10,7 +10,7 @@ access_token_secret="NagevuIxsC2r3T33e4C5Yof6kPWxMKDbDtNlK50mCrmil"
 auth = twitter.oauth.OAuth(access_token, access_token_secret, consumer_key, consumer_secret)
 twitter_api = twitter.Twitter(auth=auth)
 
-csvfile = open('brexit_data.csv', 'w')
+csvfile = open('kltu_data.csv', 'w')
 csvwriter = csv.writer(csvfile)
 csvwriter.writerow([['created_at'],
 					['screen_name'],
