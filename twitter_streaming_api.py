@@ -28,7 +28,7 @@ csvwriter.writerow([['created_at'],
 					])
 
 
-q = "brexit"
+q = "kltu"
 
 # small function encapsuate the encodes and protect replace nulls with empty values
 def clean(val):
