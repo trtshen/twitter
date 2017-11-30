@@ -70,12 +70,11 @@ def getPlace(val):
     if isinstance(val, dict):
         return val['full_name'].encode('utf-8')
 
-
 # main loop
 for tweet in stream:
-    try:
-        if tweet['truncated']:
-            tweet_text = tweet['extended_tweet']['full_text']
+	try:
+		if tweet['truncated']:
+			tweet_text = tweet['extended_tweet']['full_text']
 		else:
 			tweet_text = tweet['text']
 			csvwriter.writerow([tweet['created_at'],
@@ -94,7 +93,8 @@ for tweet in stream:
 								getVal(tweet['user']['friends_count']),
 								getVal(tweet['user']['created_at']),
 								getVal(tweet['source'])])
-        csvfile.flush()
-        print getVal(tweet['user']['screen_name']), getVal(tweet['text']), tweet['coordinates'], getPlace(tweet['place'])
-    except Exception as e:
-        print e.message
+			csvfile.flush()
+
+        	print getVal(tweet['user']['screen_name']), getVal(tweet['text']), tweet['coordinates'], getPlace(tweet['place'])
+		except Exception as e:
+			print e.message
