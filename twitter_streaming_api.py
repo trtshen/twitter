@@ -42,7 +42,7 @@ def clean(val):
         clean = val.encode('utf-8')
     return clean
 
-print 'Filtering the public timeline for keyword="%s"' % (q)
+print ('Filtering the public timeline for keyword="%s"' % (q))
 twitter_stream = twitter.TwitterStream(auth=TWITTER_API.auth)
 stream = twitter_stream.statuses.filter(track=q)
 
@@ -94,7 +94,13 @@ for tweet in stream:
                                 getVal(tweet['user']['created_at']),
                                 getVal(tweet['source'])])
         csvfile.flush()
+<<<<<<< HEAD
 
         print getVal(tweet['user']['screen_name']), getVal(tweet['text']), tweet['coordinates'], getPlace(tweet['place'])
     except Exception as e:
         print e.message
+=======
+        print (getVal(tweet['user']['screen_name']), getVal(tweet['text']), tweet['coordinates'], getPlace(tweet['place']))
+    except Exception as e:
+        print (e.message)
+>>>>>>> afe09b1ae3ddfa25811fd3d7b25848ca2eb1d4b9
