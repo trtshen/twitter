@@ -1,6 +1,5 @@
 '''Tweet Streaming API consumer'''
-import twitter
-import csv
+import twitter, csv, json
 
 # == OAuth Authentication ==
 consumer_key="HUcXih4iRVgoyV13IqxRlS5BU"
