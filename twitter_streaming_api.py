@@ -42,7 +42,7 @@ def clean(val):
         clean = val.encode('utf-8')
     return clean
 
-print 'Filtering the public timeline for keyword="%s"' % (q)
+print ('Filtering the public timeline for keyword="%s"' % (q))
 twitter_stream = twitter.TwitterStream(auth=TWITTER_API.auth)
 stream = twitter_stream.statuses.filter(track=q)
 
@@ -72,29 +72,28 @@ def getPlace(val):
 
 # main loop
 for tweet in stream:
-	try:
-		if tweet['truncated']:
-			tweet_text = tweet['extended_tweet']['full_text']
-		else:
-			tweet_text = tweet['text']
-			csvwriter.writerow([tweet['created_at'],
-								getVal(tweet['user']['id']),
-								getVal(tweet['user']['screen_name']),
-								getVal(tweet['text']),
-								getLng(tweet['coordinates']),
-								getLat(tweet['coordinates']),
-								getPlace(tweet['place']),
-								getVal(tweet['user']['location']),
-								getVal(tweet['user']['geo_enabled']),
-								getVal(tweet['user']['lang']),
-								getVal(tweet['user']['time_zone']),
-								getVal(tweet['user']['statuses_count']),
-								getVal(tweet['user']['followers_count']),
-								getVal(tweet['user']['friends_count']),
-								getVal(tweet['user']['created_at']),
-								getVal(tweet['source'])])
-			csvfile.flush()
-
-        	print getVal(tweet['user']['screen_name']), getVal(tweet['text']), tweet['coordinates'], getPlace(tweet['place'])
-		except Exception as e:
-			print e.message
+    try:
+        if tweet['truncated']:
+            tweet_text = tweet['extended_tweet']['full_text']
+        else:
+            tweet_text = tweet['text']
+            csvwriter.writerow([tweet['created_at'],
+                                getVal(tweet['user']['id']),
+                                getVal(tweet['user']['screen_name']),
+                                getVal(tweet['text']),
+                                getLng(tweet['coordinates']),
+                                getLat(tweet['coordinates']),
+                                getPlace(tweet['place']),
+                                getVal(tweet['user']['location']),
+                                getVal(tweet['user']['geo_enabled']),
+                                getVal(tweet['user']['lang']),
+                                getVal(tweet['user']['time_zone']),
+                                getVal(tweet['user']['statuses_count']),
+                                getVal(tweet['user']['followers_count']),
+                                getVal(tweet['user']['friends_count']),
+                                getVal(tweet['user']['created_at']),
+                                getVal(tweet['source'])])
+        csvfile.flush()
+        print (getVal(tweet['user']['screen_name']), getVal(tweet['text']), tweet['coordinates'], getPlace(tweet['place']))
+    except Exception as e:
+        print (e.message)
