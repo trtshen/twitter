@@ -1,11 +1,12 @@
 '''Tweet Streaming API consumer'''
-import twitter, csv, json, sys
+import twitter, csv, json, sys, pymongo
 
 # == OAuth Authentication ==
 consumer_key="HUcXih4iRVgoyV13IqxRlS5BU"
 consumer_secret="QUcm0AWx75ajw5Ewqepu4b43pXw1QdswpTrCl9VPcvodIPx2jZ"
 access_token="113197842-iicH3rBNj41yzehS4ke3Ft5BiZW3vcelQj40BVnl"
 access_token_secret="ijBDkBNxmkVy0JtLsyVaVZOzzIk3KVaD7uX9XB7Tx8x8l"
+
 
 
 auth = twitter.oauth.OAuth(access_token, access_token_secret, consumer_key, consumer_secret)
@@ -16,6 +17,7 @@ csvwriter = csv.writer(csvfile,delimiter ='|')
 
 csvwriter.writerow(['created_at',
                     'user-id',
+                    'verified',
                     'user-screen_name',
                     'text',
                     'tweet-id',
@@ -31,7 +33,8 @@ csvwriter.writerow(['created_at',
                     'coordinates lat',
                     'user-location',
                     'user-language',
-                    'retweeted_text',
+                    'retweet_count',
+                    'retweeted/quoted_text',
                     'retweeted_id'
                     ])
 
@@ -73,56 +76,81 @@ for tweet in stream:
 
     try:
         if tweet['truncated']:
-            tweet_text = tweet['extended_tweet']['full_text']
+            if tweet['retweeted_status']['truncated']:
+                retweeted_text = tweet['retweeted_status']['extended_tweet']['full_text']
+                tweet_text = tweet['extended_tweet']['full_text']
+                csvwriter.writerow([tweet['created_at'],
+                                tweet['user']['id'],
+                                tweet['user']['verified'],
+                                clean(tweet['user']['screen_name']),
+                                clean(tweet_text),
+                                tweet['id'],
+                                getPlace(tweet['place']),
+                                tweet['user']['created_at'],
+                                tweet['user']['followers_count'],
+                                tweet['user']['friends_count'],
+                                tweet['user']['statuses_count'],
+                                clean(tweet['source']),
+                                clean(tweet['user']['time_zone']),
+                                tweet['user']['geo_enabled'],
+                                getLng(tweet['coordinates']),
+                                getLat(tweet['coordinates']),
+                                clean(tweet['user']['location']),
+                                tweet['user']['lang'],
+                                tweet['retweet_count'],
+                                clean(retweeted_text),
+                                tweet['retweeted_status']['id']
+                                ])
+                print clean(tweet['user']['screen_name']), clean(retweeted_text)
+            else tweet['quoted_status']['truncated']:
+                quoted_text = tweet['quoted_status']['extended_tweet']['full_text']
+                tweet_text = tweet['extended_tweet']['full_text']
+                csvwriter.writerow([tweet['created_at'],
+                                    tweet['user']['id'],
+                                    tweet['user']['verified'],
+                                    clean(tweet['user']['screen_name']),
+                                    clean(tweet_text),
+                                    tweet['id'],
+                                    getPlace(tweet['place']),
+                                    tweet['user']['created_at'],
+                                    tweet['user']['followers_count'],
+                                    tweet['user']['friends_count'],
+                                    tweet['user']['statuses_count'],
+                                    clean(tweet['source']),
+                                    clean(tweet['user']['time_zone']),
+                                    tweet['user']['geo_enabled'],
+                                    getLng(tweet['coordinates']),
+                                    getLat(tweet['coordinates']),
+                                    clean(tweet['user']['location']),
+                                    tweet['user']['lang'],
+                                    tweet['retweet_count'],
+                                    clean(quoted_text),
+                                    tweet['quoted_status']['id']
+                                    ])
+                print clean(tweet['user']['screen_name']), clean(retweeted_text)
         else:
             tweet_text = tweet['text']
-
-        csvwriter.writerow([tweet['created_at'],
-                            tweet['user']['id'],
-                            clean(tweet['user']['screen_name']),
-                            clean(tweet_text),
-                            tweet['id'],
-                            getPlace(tweet['place']),
-                            tweet['user']['created_at'],
-                            tweet['user']['followers_count'],
-                            tweet['user']['friends_count'],
-                            tweet['user']['statuses_count'],
-                            clean(tweet['source']),
-                            clean(tweet['user']['time_zone']),
-                            tweet['user']['geo_enabled'],
-                            getLng(tweet['coordinates']),
-                            getLat(tweet['coordinates']),
-                            clean(tweet['user']['location']),
-                            tweet['user']['lang'],
-                            tweet['retweet_count']
-                            ])
-
-        if tweet['retweeted_status'] != {}:
-            retweeted_text = tweet['retweeted_status']['extended_tweet']['full_text']
-
-        csvwriter.writerow([tweet['created_at'],
-                            tweet['user']['id'],
-                            clean(tweet['user']['screen_name']),
-                            clean(tweet_text),
-                            tweet['id'],
-                            getPlace(tweet['place']),
-                            tweet['user']['created_at'],
-                            tweet['user']['followers_count'],
-                            tweet['user']['friends_count'],
-                            tweet['user']['statuses_count'],
-                            clean(tweet['source']),
-                            clean(tweet['user']['time_zone']),
-                            tweet['user']['geo_enabled'],
-                            getLng(tweet['coordinates']),
-                            getLat(tweet['coordinates']),
-                            clean(tweet['user']['location']),
-                            tweet['user']['lang'],
-                            tweet['retweet_count'],
-                            clean(retweeted_text),
-                            tweet['retweeted_status']['id']
-                            ])
-
-        print clean(tweet['user']['screen_name']), clean(tweet_text)
+            csvwriter.writerow([tweet['created_at'],
+                                tweet['user']['id'],
+                                tweet['user']['verified'],
+                                clean(tweet['user']['screen_name']),
+                                clean(tweet_text),
+                                tweet['id'],
+                                getPlace(tweet['place']),
+                                tweet['user']['created_at'],
+                                tweet['user']['followers_count'],
+                                tweet['user']['friends_count'],
+                                tweet['user']['statuses_count'],
+                                clean(tweet['source']),
+                                clean(tweet['user']['time_zone']),
+                                tweet['user']['geo_enabled'],
+                                getLng(tweet['coordinates']),
+                                getLat(tweet['coordinates']),
+                                clean(tweet['user']['location']),
+                                tweet['user']['lang'],
+                                tweet['retweet_count']
+                                ])
+            print clean(tweet['user']['screen_name']), clean(tweet_text)
 
     except Exception, err:
         print err
