@@ -7,8 +7,6 @@ consumer_secret="QUcm0AWx75ajw5Ewqepu4b43pXw1QdswpTrCl9VPcvodIPx2jZ"
 access_token="113197842-iicH3rBNj41yzehS4ke3Ft5BiZW3vcelQj40BVnl"
 access_token_secret="ijBDkBNxmkVy0JtLsyVaVZOzzIk3KVaD7uX9XB7Tx8x8l"
 
-
-
 auth = twitter.oauth.OAuth(access_token, access_token_secret, consumer_key, consumer_secret)
 twitter_api = twitter.Twitter(auth=auth)
 
@@ -70,146 +68,124 @@ def getPlace(val):
     if isinstance(val, dict):
         return val['full_name'].encode('utf-8')
 
+def write_retweet(retweeted_text):
+    csvwriter.writerow([tweet['created_at'],
+                        tweet['user']['id'],
+                        tweet['user']['verified'],
+                        clean(tweet['user']['screen_name']),
+                        clean(tweet['text']),
+                        tweet['id'],
+                        getPlace(tweet['place']),
+                        tweet['user']['created_at'],
+                        tweet['user']['followers_count'],
+                        tweet['user']['friends_count'],
+                        tweet['user']['statuses_count'],
+                        clean(tweet['source']),
+                        clean(tweet['user']['time_zone']),
+                        tweet['user']['geo_enabled'],
+                        getLng(tweet['coordinates']),
+                        getLat(tweet['coordinates']),
+                        clean(tweet['user']['location']),
+                        tweet['user']['lang'],
+                        tweet['retweet_count'],
+                        clean(retweeted_text),
+                        tweet['retweeted_status']['id']
+                        ])
+
+def write_quote(quoted_text):
+    csvwriter.writerow([tweet['created_at'],
+                        tweet['user']['id'],
+                        tweet['user']['verified'],
+                        clean(tweet['user']['screen_name']),
+                        clean(tweet['text']),
+                        tweet['id'],
+                        getPlace(tweet['place']),
+                        tweet['user']['created_at'],
+                        tweet['user']['followers_count'],
+                        tweet['user']['friends_count'],
+                        tweet['user']['statuses_count'],
+                        clean(tweet['source']),
+                        clean(tweet['user']['time_zone']),
+                        tweet['user']['geo_enabled'],
+                        getLng(tweet['coordinates']),
+                        getLat(tweet['coordinates']),
+                        clean(tweet['user']['location']),
+                        tweet['user']['lang'],
+                        tweet['retweet_count'],
+                        clean(quoted_text),
+                        tweet['quoted_status_id']
+                        ])
+
+def write_tweet(tweet_text):
+    csvwriter.writerow([tweet['created_at'],
+                        tweet['user']['id'],
+                        tweet['user']['verified'],
+                        clean(tweet['user']['screen_name']),
+                        clean(tweet_text),
+                        tweet['id'],
+                        getPlace(tweet['place']),
+                        tweet['user']['created_at'],
+                        tweet['user']['followers_count'],
+                        tweet['user']['friends_count'],
+                        tweet['user']['statuses_count'],
+                        clean(tweet['source']),
+                        clean(tweet['user']['time_zone']),
+                        tweet['user']['geo_enabled'],
+                        getLng(tweet['coordinates']),
+                        getLat(tweet['coordinates']),
+                        clean(tweet['user']['location']),
+                        tweet['user']['lang'],
+                        tweet['retweet_count']
+                        ])
+
 for tweet in stream:
     # print json.dumps(tweet)
     # sys.exit(1)
 
     try:
         if tweet['truncated']:
-            # get truncated retweet
+            #get RT in truncated tweet
             if tweet['retweeted_status'] is not None:
                 if tweet['retweeted_status']['truncated']:
                     retweeted_text = tweet['retweeted_status']['extended_tweet']['full_text']
-                    tweet_text = tweet['extended_tweet']['full_text']
-                    csvwriter.writerow([tweet['created_at'],
-                                    tweet['user']['id'],
-                                    tweet['user']['verified'],
-                                    clean(tweet['user']['screen_name']),
-                                    clean(tweet_text),
-                                    tweet['id'],
-                                    getPlace(tweet['place']),
-                                    tweet['user']['created_at'],
-                                    tweet['user']['followers_count'],
-                                    tweet['user']['friends_count'],
-                                    tweet['user']['statuses_count'],
-                                    clean(tweet['source']),
-                                    clean(tweet['user']['time_zone']),
-                                    tweet['user']['geo_enabled'],
-                                    getLng(tweet['coordinates']),
-                                    getLat(tweet['coordinates']),
-                                    clean(tweet['user']['location']),
-                                    tweet['user']['lang'],
-                                    tweet['retweet_count'],
-                                    clean(retweeted_text),
-                                    tweet['retweeted_status']['id']
-                                    ])
-                    print clean(tweet['user']['screen_name']), clean(retweeted_text)
                 else:
-                    # get untruncated retweet
                     retweeted_text = tweet['retweeted_status']['text']
-                    tweet_text = tweet['extended_tweet']['full_text']
-                    csvwriter.writerow([tweet['created_at'],
-                                        tweet['user']['id'],
-                                        tweet['user']['verified'],
-                                        clean(tweet['user']['screen_name']),
-                                        clean(tweet_text),
-                                        tweet['id'],
-                                        getPlace(tweet['place']),
-                                        tweet['user']['created_at'],
-                                        tweet['user']['followers_count'],
-                                        tweet['user']['friends_count'],
-                                        tweet['user']['statuses_count'],
-                                        clean(tweet['source']),
-                                        clean(tweet['user']['time_zone']),
-                                        tweet['user']['geo_enabled'],
-                                        getLng(tweet['coordinates']),
-                                        getLat(tweet['coordinates']),
-                                        clean(tweet['user']['location']),
-                                        tweet['user']['lang'],
-                                        tweet['retweet_count'],
-                                        clean(retweeted_text),
-                                        tweet['retweeted_status']['id']
-                                        ])
-                    print clean(tweet['user']['screen_name']), clean(retweeted_text)
+                write_retweet(retweeted_text)
+                print clean(tweet['user']['screen_name']), clean(tweet['text'])
 
+# unresolved
+            #get quoted tweet in truncated tweet
             elif tweet['quoted_status'] is not None:
-                # get truncated quoted tweet
                 if tweet['quoted_status']['truncated']:
                     quoted_text = tweet['quoted_status']['extended_tweet']['full_text']
-                    tweet_text = tweet['extended_tweet']['full_text']
-                    csvwriter.writerow([tweet['created_at'],
-                                        tweet['user']['id'],
-                                        tweet['user']['verified'],
-                                        clean(tweet['user']['screen_name']),
-                                        clean(tweet_text),
-                                        tweet['id'],
-                                        getPlace(tweet['place']),
-                                        tweet['user']['created_at'],
-                                        tweet['user']['followers_count'],
-                                        tweet['user']['friends_count'],
-                                        tweet['user']['statuses_count'],
-                                        clean(tweet['source']),
-                                        clean(tweet['user']['time_zone']),
-                                        tweet['user']['geo_enabled'],
-                                        getLng(tweet['coordinates']),
-                                        getLat(tweet['coordinates']),
-                                        clean(tweet['user']['location']),
-                                        tweet['user']['lang'],
-                                        tweet['retweet_count'],
-                                        clean(quoted_text),
-                                        tweet['quoted_status']['id']
-                                        ])
-                    print clean(tweet['user']['screen_name']), clean(quoted_text)
                 else:
-                    # get untruncated quoted tweet
                     quoted_text = tweet['quoted_status']['text']
-                    tweet_text = tweet['extended_tweet']['full_text']
-                    csvwriter.writerow([tweet['created_at'],
-                                        tweet['user']['id'],
-                                        tweet['user']['verified'],
-                                        clean(tweet['user']['screen_name']),
-                                        clean(tweet_text),
-                                        tweet['id'],
-                                        getPlace(tweet['place']),
-                                        tweet['user']['created_at'],
-                                        tweet['user']['followers_count'],
-                                        tweet['user']['friends_count'],
-                                        tweet['user']['statuses_count'],
-                                        clean(tweet['source']),
-                                        clean(tweet['user']['time_zone']),
-                                        tweet['user']['geo_enabled'],
-                                        getLng(tweet['coordinates']),
-                                        getLat(tweet['coordinates']),
-                                        clean(tweet['user']['location']),
-                                        tweet['user']['lang'],
-                                        tweet['retweet_count'],
-                                        clean(quoted_text),
-                                        tweet['quoted_status']['id']
-                                        ])
-                    print clean(tweet['user']['screen_name']), clean(quoted_text)
+                write_retweet(quoted_text)
+                print clean(tweet['user']['screen_name']), clean(tweet['text'])
         else:
-            tweet_text = tweet['text']
-            csvwriter.writerow([tweet['created_at'],
-                                tweet['user']['id'],
-                                tweet['user']['verified'],
-                                clean(tweet['user']['screen_name']),
-                                clean(tweet_text),
-                                tweet['id'],
-                                getPlace(tweet['place']),
-                                tweet['user']['created_at'],
-                                tweet['user']['followers_count'],
-                                tweet['user']['friends_count'],
-                                tweet['user']['statuses_count'],
-                                clean(tweet['source']),
-                                clean(tweet['user']['time_zone']),
-                                tweet['user']['geo_enabled'],
-                                getLng(tweet['coordinates']),
-                                getLat(tweet['coordinates']),
-                                clean(tweet['user']['location']),
-                                tweet['user']['lang'],
-                                tweet['retweet_count']
-                                ])
-            print clean(tweet['user']['screen_name']), clean(tweet_text)
+            #get RT in untruncated tweet
+            if tweet['retweeted_status'] is not None:
+                if tweet['retweeted_status']['truncated']:
+                    retweeted_text = tweet['retweeted_status']['extended_tweet']['full_text']
+                else:
+                    retweeted_text = tweet['retweeted_status']['text']
+                write_retweet(retweeted_text)
+                print clean(tweet['user']['screen_name']), clean(tweet['text'])
+
+            #get quoted tweet in truncated tweet
+            elif tweet['quoted_status'] is not None:
+                if tweet['quoted_status']['truncated']:
+                    quoted_text = tweet['quoted_status']['extended_tweet']['full_text']
+                else:
+                    quoted_text = tweet['quoted_status']['text']
+                write_quote(quoted_text)
+                print clean(tweet['user']['screen_name']), clean(tweet['text'])
+
+            # get untruncated tweet
+            else:
+                tweet_text = tweet['text']
+                write_tweet(tweet_text)
+                print clean(tweet['user']['screen_name']), clean(tweet_text)
 
     except Exception, err:
         print err

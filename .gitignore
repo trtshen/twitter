@@ -1,11 +1,7 @@
-kltu_data.csv
-printharry.csv
+*.csv
 twitter_streaming_api_#princeharry.py
 twitter_streaming_api_#royalwedding.py
 twitter_streaming_api_princeharry.py
 twitter_streaming_api_royalwedding.py
 twitter_streaming_unicode_truncated.py
 twitter_streaming_api_2.py
-2mdb.csv
-thelastjedi.csv
-starwars.csv
