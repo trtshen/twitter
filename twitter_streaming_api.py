@@ -1,5 +1,5 @@
 '''Tweet Streaming API consumer'''
-import twitter, csv, json, sys, tweepy
+import twitter, csv, json, sys
 
 # == OAuth Authentication ==
 consumer_key="HUcXih4iRVgoyV13IqxRlS5BU"
@@ -31,12 +31,10 @@ csvwriter.writerow(['created_at',
                     'coordinates lat',
                     'user-location',
                     'user-language',
-                    'retweet_count',
-                    'retweeted/quoted_text',
-                    'retweeted_id'
+                    'retweet_count'
                     ])
 
-q = "starwars"
+q = "starwars, star wars, thelastjedi, the last jedi, jedi, luke, rey, leia, kyloren, kylo ren, darthvader, darth vader, finn, poe"
 
 print 'Filtering the public timeline for keyword="%s"' % (q)
 twitter_stream = twitter.TwitterStream(auth=twitter_api.auth)
@@ -68,54 +66,6 @@ def getPlace(val):
     if isinstance(val, dict):
         return val['full_name'].encode('utf-8')
 
-def write_retweet(retweeted_text):
-    csvwriter.writerow([tweet['created_at'],
-                        tweet['user']['id'],
-                        tweet['user']['verified'],
-                        clean(tweet['user']['screen_name']),
-                        clean(tweet['text']),
-                        tweet['id'],
-                        getPlace(tweet['place']),
-                        tweet['user']['created_at'],
-                        tweet['user']['followers_count'],
-                        tweet['user']['friends_count'],
-                        tweet['user']['statuses_count'],
-                        clean(tweet['source']),
-                        clean(tweet['user']['time_zone']),
-                        tweet['user']['geo_enabled'],
-                        getLng(tweet['coordinates']),
-                        getLat(tweet['coordinates']),
-                        clean(tweet['user']['location']),
-                        tweet['user']['lang'],
-                        tweet['retweet_count'],
-                        clean(retweeted_text),
-                        tweet['retweeted_status']['id']
-                        ])
-
-def write_quote(quoted_text):
-    csvwriter.writerow([tweet['created_at'],
-                        tweet['user']['id'],
-                        tweet['user']['verified'],
-                        clean(tweet['user']['screen_name']),
-                        clean(tweet['text']),
-                        tweet['id'],
-                        getPlace(tweet['place']),
-                        tweet['user']['created_at'],
-                        tweet['user']['followers_count'],
-                        tweet['user']['friends_count'],
-                        tweet['user']['statuses_count'],
-                        clean(tweet['source']),
-                        clean(tweet['user']['time_zone']),
-                        tweet['user']['geo_enabled'],
-                        getLng(tweet['coordinates']),
-                        getLat(tweet['coordinates']),
-                        clean(tweet['user']['location']),
-                        tweet['user']['lang'],
-                        tweet['retweet_count'],
-                        clean(quoted_text),
-                        tweet['quoted_status_id']
-                        ])
-
 def write_tweet(tweet_text):
     csvwriter.writerow([tweet['created_at'],
                         tweet['user']['id'],
@@ -144,48 +94,11 @@ for tweet in stream:
 
     try:
         if tweet['truncated']:
-            #get RT in truncated tweet
-            if tweet['retweeted_status'] is not None:
-                if tweet['retweeted_status']['truncated']:
-                    retweeted_text = tweet['retweeted_status']['extended_tweet']['full_text']
-                else:
-                    retweeted_text = tweet['retweeted_status']['text']
-                write_retweet(retweeted_text)
-                print clean(tweet['user']['screen_name']), clean(tweet['text'])
-
-# unresolved
-            #get quoted tweet in truncated tweet
-            elif tweet['quoted_status'] is not None:
-                if tweet['quoted_status']['truncated']:
-                    quoted_text = tweet['quoted_status']['extended_tweet']['full_text']
-                else:
-                    quoted_text = tweet['quoted_status']['text']
-                write_retweet(quoted_text)
-                print clean(tweet['user']['screen_name']), clean(tweet['text'])
+            tweet_text = tweet['extended_tweet']['full_text']
         else:
-            #get RT in untruncated tweet
-            if tweet['retweeted_status'] is not None:
-                if tweet['retweeted_status']['truncated']:
-                    retweeted_text = tweet['retweeted_status']['extended_tweet']['full_text']
-                else:
-                    retweeted_text = tweet['retweeted_status']['text']
-                write_retweet(retweeted_text)
-                print clean(tweet['user']['screen_name']), clean(tweet['text'])
-
-            #get quoted tweet in truncated tweet
-            elif tweet['quoted_status'] is not None:
-                if tweet['quoted_status']['truncated']:
-                    quoted_text = tweet['quoted_status']['extended_tweet']['full_text']
-                else:
-                    quoted_text = tweet['quoted_status']['text']
-                write_quote(quoted_text)
-                print clean(tweet['user']['screen_name']), clean(tweet['text'])
-
-            # get untruncated tweet
-            else:
-                tweet_text = tweet['text']
-                write_tweet(tweet_text)
-                print clean(tweet['user']['screen_name']), clean(tweet_text)
+            tweet_text = tweet['text']
+        write_tweet(tweet_text)
+        print tweet['user']['screen_name'], clean(tweet_text)
 
     except Exception, err:
         print err
