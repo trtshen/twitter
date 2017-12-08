@@ -1,6 +1,8 @@
 '''Tweet Streaming API consumer'''
 import twitter, csv, json, sys
 
+import credentials
+
 # == OAuth Authentication ==
 consumer_key="HUcXih4iRVgoyV13IqxRlS5BU"
 consumer_secret="QUcm0AWx75ajw5Ewqepu4b43pXw1QdswpTrCl9VPcvodIPx2jZ"
