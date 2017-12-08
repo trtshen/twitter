@@ -1,7 +1,6 @@
 '''Tweet Streaming API consumer'''
 import twitter, csv, json, sys
 
-import credentials
 
 # == OAuth Authentication ==
 consumer_key="4e22BP6rGNSmvYeifBlrnESB2"
@@ -214,9 +213,12 @@ for tweet in stream:
         # Determine which field to get
         tweet['tweet_text'] = get_tweet_text(tweet)
 
+        # if tweet['tweet_text'] is None:
+        #     print tweet
+
         write_tweet(tweet['tweet_text'] )
 
-        #print tweet['user']['screen_name'], clean(tweet_text)
+        print tweet['user']['screen_name'], clean(tweet['tweet_text'])
 
     except Exception, err:
         print err
