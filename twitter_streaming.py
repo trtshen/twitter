@@ -11,7 +11,7 @@ access_token_secret="NQRaoIIyMVasxPGMWGqf6zzkqUb4afVagmjQVRZ5AvJd0"
 auth = twitter.oauth.OAuth(access_token, access_token_secret, consumer_key, consumer_secret)
 twitter_api = twitter.Twitter(auth=auth)
 
-csvfile = open('starwars.csv', 'w')
+csvfile = open('brexit.csv', 'w')
 csvwriter = csv.writer(csvfile,delimiter ='|')
 
 csvwriter.writerow(['created_at',
@@ -20,6 +20,8 @@ csvwriter.writerow(['created_at',
                     'user-screen_name',
                     'text',
                     'tweet-id',
+                    'full_tweet_text',
+                    'tweet_type',
                     'tweet-place',
                     'user-created_at',
                     'user-followers_count',
@@ -67,13 +69,17 @@ def getPlace(val):
     if isinstance(val, dict):
         return val['full_name'].encode('utf-8')
 
-def write_tweet(tweet_text):
+def write_tweet(tweet):
+    # print json.dumps(tweet, indent=4)
+    # sys.exit()
     csvwriter.writerow([tweet['created_at'],
                         tweet['user']['id'],
                         tweet['user']['verified'],
                         clean(tweet['user']['screen_name']),
-                        clean(tweet_text),
+                        clean(tweet['text']),
                         tweet['id'],
+                        clean(tweet['tweet_text']),
+                        tweet['tweet_type'],
                         getPlace(tweet['place']),
                         tweet['user']['created_at'],
                         tweet['user']['followers_count'],
@@ -87,7 +93,7 @@ def write_tweet(tweet_text):
                         clean(tweet['user']['location']),
                         tweet['user']['lang'],
                         tweet['retweet_count']
-                        ])
+                         ])
 
 # 20171208 Added new function here #
 # To identify the tweet type
@@ -139,7 +145,7 @@ def get_tweet_status(x):
 # To get the correct tweet text, based on twitter type and twitter status
 def get_tweet_text(x):
 
-    # Get the value of tweet_type 
+    # Get the value of tweet_type
     # Value : normal, retweet, quote_tweet
     tweet_type = x['tweet_type']
 
@@ -152,7 +158,7 @@ def get_tweet_text(x):
     tweet_msg = None
 
     # Condition Checking
-    # 
+    #
     # if tweet_type message is normal
     if tweet_type == 'normal':
 
@@ -216,9 +222,9 @@ for tweet in stream:
         # if tweet['tweet_text'] is None:
         #     print tweet
 
-        write_tweet(tweet['tweet_text'] )
+        write_tweet(tweet)
 
-        print tweet['user']['screen_name'], clean(tweet['tweet_text'])
+        print tweet['user']['screen_name'], tweet['tweet_type'], clean (tweet['text'])
 
     except Exception, err:
         print err
